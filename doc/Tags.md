@@ -1,1 +1,1 @@
-list, price, buy, cancelList
+list, price, buy, changePrice
