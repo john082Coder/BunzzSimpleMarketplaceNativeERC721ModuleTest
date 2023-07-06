@@ -3,30 +3,32 @@ import React, { useState,  } from "react";
 
 import useBunzz from '../hooks/useBunzz';
 
-import { getMarketplaceNativeERC1155Contract, cancelList, buy, list  } from '../contracts/utils'
+import { getMarketplaceNativeERC721Contract, changePrice, buy, list, cancelListing  } from '../contracts/utils'
 import { useWeb3React } from "@web3-react/core";
 
 import { bnToDec, isAddress } from "../utils";
 const Creator = () => {
     const bunzz = useBunzz();
     const { account} = useWeb3React();
-    const MarketplaceNativeERC1155Contract = getMarketplaceNativeERC1155Contract(bunzz);
+    const MarketplaceNativeERC721Contract = getMarketplaceNativeERC721Contract(bunzz);
 
     const [listPrice, setListPrice] = useState(0);
-    const [listAmount, setListAmount] = useState(0);
-    const [tokenId, setTokenId] = useState(0);
+    const [listTokenId, setListTokenId] = useState(0);
 
     const [buyTokenId, setBuyTokenId] = useState(0);
     const [buyAmount, setBuyAmount] = useState(0);
 
     const [cancelTokenId, setCancelTokenId] = useState(0);
 
+    const [changePriceTokenId, setChangePriceTokenId] = useState(0);
+    const [newPrice, setNewPrice] = useState(0);
 
   
 
     const [pendingList, setPendingList] = useState(false);
     const [pendingBuy, setPendingBuy] = useState(false);
-    const [pendingCancelList, setPendingCancelList] = useState(false)
+    const [pendingCancelList, setPendingCancelList] = useState(false);
+    const [pendingChangePrice, setPendingChangePrice] = useState(false);
   
   
    
@@ -37,11 +39,9 @@ const Creator = () => {
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Input Token ID</Form.Label>
-                            <Form.Control type="email" placeholder="Enter token id" value={tokenId} onChange={(val) => setTokenId(val.target.value)} />
-                            <Form.Label>Input Amount</Form.Label>
-                            <Form.Control type="email" placeholder="Enter Id" value={listAmount} onChange={(val) => setListAmount(val.target.value)} />
+                            <Form.Control type="email" placeholder="Enter token id" value={listTokenId} onChange={(val) => setListTokenId(val.target.value)} />
                             <Form.Label>Input Price</Form.Label>
-                            <Form.Control type="email" placeholder="Enter price" value={listAmount} onChange={(val) => setListPrice(val.target.value)} />
+                            <Form.Control type="email" placeholder="Enter price" value={listPrice} onChange={(val) => setListPrice(val.target.value)} />
                         </Form.Group>
                             {!pendingList ?
                                 <Button className="mx-3 mt-2" variant="dark" onClick={async () => {
@@ -50,9 +50,8 @@ const Creator = () => {
                                     let txHash;
                                     
                                     txHash = await list(
-                                        MarketplaceNativeERC1155Contract,
-                                        tokenId,
-                                        listAmount,
+                                        MarketplaceNativeERC721Contract,
+                                        listTokenId,
                                         listPrice,
                                         account,
                                     );
@@ -81,9 +80,50 @@ const Creator = () => {
                         }
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Input TokenId</Form.Label>
+                            <Form.Control type="email" placeholder="Enter token id" value={changePriceTokenId} onChange={(val) => setChangePriceTokenId(val.target.value)} />
+                            <Form.Label>Input New Price</Form.Label>
+                            <Form.Control type="email" placeholder="Enter new price" value={newPrice} onChange={(val) => setNewPrice(val.target.value)} />
+                        </Form.Group>
+                        {!pendingChangePrice ?
+                                <Button className="mx-3 mt-2" variant="dark" onClick={async () => {
+                                    setPendingChangePrice(true);
+                                try {
+                                    let txHash;
+                                    
+                                    txHash = await changePrice(
+                                        MarketplaceNativeERC721Contract,
+                                        changePriceTokenId,
+                                        newPrice,
+                                        account,
+                                    );
+                                
+                                    console.log(txHash);
+                                    setPendingChangePrice(false);
+                                    
+                                } catch (e) {
+                                    console.log(e);
+                                    setPendingChangePrice(false);
+                                    
+                                }
+                            }}>
+                                ChangePrice
+                            </Button>
+                            :
+                            <Button className="mx-3 mt-2" variant="dark">
+                                 <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                    />{` `} ChangePrice
+                            </Button>
+                        }
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Label>Input TokenId</Form.Label>
                             <Form.Control type="email" placeholder="Enter token id" value={buyTokenId} onChange={(val) => setBuyTokenId(val.target.value)} />
-                            <Form.Label>Input Token Amount</Form.Label>
-                            <Form.Control type="email" placeholder="Enter token amount" value={buyAmount} onChange={(val) => setBuyAmount(val.target.value)} />
+                            <Form.Label>Input ETH Amount</Form.Label>
+                            <Form.Control type="email" placeholder="Enter ETH amount" value={buyAmount} onChange={(val) => setBuyAmount(val.target.value)} />
                         </Form.Group>
 
                         {!pendingBuy ?
@@ -93,7 +133,7 @@ const Creator = () => {
                                     let txHash;
                                     
                                     txHash = await buy(
-                                        MarketplaceNativeERC1155Contract,
+                                        MarketplaceNativeERC721Contract,
                                         buyTokenId,
                                         buyAmount,
                                         account,
@@ -122,6 +162,7 @@ const Creator = () => {
                                     />{` `} Buy
                             </Button>
                         }
+
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Input TokenId</Form.Label>
                             <Form.Control type="email" placeholder="Enter token id" value={cancelTokenId} onChange={(val) => setCancelTokenId(val.target.value)} />
@@ -133,8 +174,8 @@ const Creator = () => {
                                 try {
                                     let txHash;
                                     
-                                    txHash = await cancelList(
-                                        MarketplaceNativeERC1155Contract,
+                                    txHash = await cancelListing(
+                                        MarketplaceNativeERC721Contract,
                                         cancelTokenId,
                                         account,
                                     );

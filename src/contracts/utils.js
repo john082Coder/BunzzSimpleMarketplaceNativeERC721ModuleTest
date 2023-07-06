@@ -24,7 +24,7 @@ export const setErc20ContractAddress = (bunzz, address) => {
 
 
 export const list = async (MarketplaceNativeERC721Contract, tokenId, price, account) => {
-  return MarketplaceNativeERC721Contract.methods.list(tokenId, price).send({ from: account})
+  return MarketplaceNativeERC721Contract.methods.list(tokenId, new BigNumber(price).times(new BigNumber(10).pow(18)).toString()).send({ from: account})
   .on('transactionHash', (tx) => {
     console.log(tx)
     return tx.transactionHash
@@ -32,15 +32,15 @@ export const list = async (MarketplaceNativeERC721Contract, tokenId, price, acco
 }
 
 export const changePrice = async (MarketplaceNativeERC721Contract, tokenId, newPrice, account) => {
-  return MarketplaceNativeERC721Contract.methods.changePrice(tokenId, newPrice).send({ from: account})
+  return MarketplaceNativeERC721Contract.methods.changePrice(tokenId, new BigNumber(newPrice).times(new BigNumber(10).pow(18)).toString()).send({ from: account})
   .on('transactionHash', (tx) => {
     console.log(tx)
     return tx.transactionHash
   }); 
 }
 
-export const buy = async (MarketplaceNativeERC721Contract, tokenId, account) => {
-  return MarketplaceNativeERC721Contract.methods.buy(tokenId).send({ from: account})
+export const buy = async (MarketplaceNativeERC721Contract, tokenId, ethAmount, account) => {
+  return MarketplaceNativeERC721Contract.methods.buy(tokenId).send({ from: account, value:new BigNumber(ethAmount).times(new BigNumber(10).pow(18)).toString()})
   .on('transactionHash', (tx) => {
     console.log(tx)
     return tx.transactionHash
