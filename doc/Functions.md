@@ -18,10 +18,10 @@ This function will be called by the buyers to purchase the NFT
 |Name|Type|Description|
 |--- |---|---|
 |listingId|uint256|The listing id of the token which you want to buy|
-|amount|uint256|The amount which you want to purchase|
 
-## cancelList
+## cancelListing
 This functions is for cancelling a listing.
+
 |Name|Type|Description|
 |--- |---|---|
 |tokenId|uint256|The id of the token which you want to remove|
@@ -35,6 +35,14 @@ This function is for listing a token for sale
 |amount|uint256|The amount which you want to list|
 |price|uint256|The price which you want to list for sale|
 
+## changePrice
+This function is for changing listed price.
+
+|Name|Type|Description|
+|--- |---|---|
+|tokenId|uint256|The token id which you want to change listed price|
+|newPrice|uint256|The new price which you want to update|
+
 
 
 # READ(main)
@@ -47,7 +55,8 @@ No arguments
 
 
 ## token
-Returns the address of the ERC1155 token
+Returns the address of the ERC721 token
+
 No arguments
 
 ## tokensListing
